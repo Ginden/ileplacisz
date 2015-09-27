@@ -35,7 +35,7 @@
         <h1>ZUS Quiz</h1>
         <p class="lead">Wybierz parametry z listy i zobacz czy dobrze oszacowałeś potrzeby ZUSu.</p>
 		<div class="row">
-		  <div class="col-md-8">
+		  <div class="col-md-8" id="canvas-container">
 				<canvas id="myChart" width="600" height="600"></canvas>
 		  </div>
 		  <div class="col-md-4">
@@ -60,7 +60,7 @@
 				</div>
 				<div class="form-group">
 					<h2>Ile powinien średnio płacić miesięcznie?</h2>
-					<input class="bar" data-output-to="xd" type="range" id="wysokosc_skladki" min="0" step="50" max="1200" value="300"/>
+					<input class="bar" data-output-to="xd" type="range" id="wysokosc_skladki" min="0" step="25" max="1200" value="450"/>
 					<span class="highlight"></span>
 					<h3><span id="xd">300</span>zł</h3>
 				</div>
@@ -73,8 +73,11 @@
 				<button type="button" id="check" class="btn btn-primary">Sprawdź</button>
 			</form>
 		  </div>
+
 		</div>
-        
+		  <div class="output row" id="your-result">
+
+		  </div>
       </div>
 
       <footer class="footer">
@@ -97,25 +100,30 @@
     		var baseTaxPerYear = 12*($('#wysokosc_skladki').val());
     		var increaseRate = 1+Number($('#wzrost').val())/100;
     		var taxInYear = [baseTaxPerYear];
+    		var labels = ["2016", "2017", "2018", "2019", "2020"];
     		var fusSpendings = [208, 218, 230, 242, 255];
+    		var polandBudgetPerYear = [1500];
     		for(var i = 1; i < fusSpendings.length; i++) {
     			taxInYear[i] = taxInYear[i-1]*increaseRate;
+    			polandBudgetPerYear[i] = polandBudgetPerYear[i-1]*1.03;
     		}
     		var budgetPerYear = taxInYear.map(function(tax){
     			return Math.round((tax*payingPeople)/(1000*1000*1000));
     		});
-    		console.log(budgetPerYear, fusSpendings)
+    		
+    		console.log(polandBudgetPerYear);
     		var budgetHolePerYear = budgetPerYear.map(function(budgetInYear, y){
     			return fusSpendings[y] - budgetInYear;
     		});
+    		var expectedHolePerYear = [54, 56, 58, 59, 61];
     		var data = {
-			    labels: ["2016", "2017", "2018", "2019", "2020"],
+			    labels: labels,
 			    datasets: [
 			        {
 			            label: "Wydatki FUS",
-			            fillColor: "rgba(0,0,0,0.6)",
-			            strokeColor: "rgba(0,0,0,0.2)",
-			            pointColor: "rgba(0,0,0,0.5)",
+			            fillColor: "rgba(0,0,0,0.01)",
+			            strokeColor: "rgba(0,0,0,1)",
+			            pointColor: "rgba(0,0,0,1)",
 			            pointStrokeColor: "#fff",
 			            pointHighlightFill: "#fff",
 			            pointHighlightStroke: "rgba(0,0,0,1)",
@@ -123,9 +131,9 @@
 			        },
 			        {
 			            label: "Wydatki na emerytury",
-			            fillColor: "rgba(0,220,220,0.6)",
-			            strokeColor: "rgba(0,220,220,1)",
-			            pointColor: "rgba(0,220,220,1)",
+			            fillColor: "transparent",
+			            strokeColor: "rgb(141,182,0)",
+			            pointColor: "rgb(141,182,0)",
 			            pointStrokeColor: "#fff",
 			            pointHighlightFill: "#fff",
 			            pointHighlightStroke: "rgba(0,220,220,1)",
@@ -133,26 +141,181 @@
 			        },
 			        {
 			            label: "Przewidywany deficyt FUS",
-			            fillColor: "rgba(151,0,205,0.6)",
+			            fillColor: "transparent",
 			            strokeColor: "rgba(151,0,205,1)",
 			            pointColor: "rgba(151,0,205,1)",
 			            pointStrokeColor: "#fff",
 			            pointHighlightFill: "#fff",
 			            pointHighlightStroke: "rgba(151,187,205,1)",
-			            data: [54, 56, 58, 59, 61]
+			            data: expectedHolePerYear
 			        },
 			        {
 			            label: "Deficyt wg Twojej wysokości składek",
-			            fillColor: "rgba(151,187,0,0.6)",
-			            strokeColor: "rgba(151,187,0,1)",
-			            pointColor: "rgba(151,187,0,1)",
+			            fillColor: "transparent",
+			            strokeColor: "rgb(210,40,0)",
+			            pointColor: "rgb(210,40,0)",
 			            pointStrokeColor: "#fff",
 			            pointHighlightFill: "#fff",
 			            pointHighlightStroke: "rgba(151,187,0,1)",
-			            data: budgetHolePerYear
+			            data: budgetHolePerYear.map(function(el){
+			            	return Math.max(0,el);
+			            })
+			        },
+			        {
+			            label: "Wpływy wg Twojej wysokości składek",
+			            fillColor: "transparent",
+			            strokeColor: "rgb(120,40,0)",
+			            pointColor: "rgb(120,40,0)",
+			            pointStrokeColor: "#fff",
+			            pointHighlightFill: "#fff",
+			            pointHighlightStroke: "rgba(151,187,0,1)",
+			            data: budgetPerYear
 			        }
 			    ]
 			};
+			var haveExtra = budgetHolePerYear.some(function(el){return el < 0});
+			if (haveExtra) {
+				data.datasets.push({
+			            label: "Nadwyżka wg Twojej wysokości składek",
+			            fillColor: "transparent",
+			            strokeColor: "rgb(40,210,40)",
+			            pointColor: "rgb(40,210,40)",
+			            pointStrokeColor: "#fff",
+			            pointHighlightFill: "#fff",
+			            pointHighlightStroke: "rgb(40,210,40)",
+			            data: budgetHolePerYear.map(function(el){
+			            	return el < 0 ? Math.abs(el) : 0;
+			            })
+			        });
+			}
+
+			var possibleOutputs = [
+				{
+					name: 'PRZEJEBAŁEŚ',
+					outputClass: 'critical',
+					description: function(){
+						return 'W roku '+this.year+' dług publiczny sięgnął krytycznego poziomu '+Number((50+(this.countryHole*100)).toFixed(1))+'% PKB, a państwo zbankrutowało. Zostajesz powieszony na latarni przez tłum głodnych emerytów.';
+					},
+					test: function(){
+						for(var i = 0, sum = 0; i < budgetHolePerYear.length; i++) {
+							sum += (budgetHolePerYear[i] - expectedHolePerYear[i]);
+							if (sum/polandBudgetPerYear[i] > 0.20) {
+								this.countryHole = sum/polandBudgetPerYear[i];
+								this.year = labels[i];
+								return true;
+							}
+						}
+						return false;
+					}
+				},
+				{
+					name: 'Uuuu, niedobrze',
+					outputClass: 'fail',
+					description: function(){
+						return 'Dług FUS, a w konsekwencji dług publiczny, poszybowały drastycznie w górę na skutek Twojego lekkomyślnego postępowania z finansami publicznymi. Pod koniec Twojej kadencji państwo jest zadłużone na '+Number((50+(this.countryHole*100)).toFixed(1))+'% PKB i znajduje się na granicy bankructwa. Popełniłeś przestępstwo z artykułu 296KK. Sąd skazał Cię na maksymalną karę - 10 lat bezwzględnego pozbawienia wolności.';
+					},
+					test: function(){
+						for(var i = 0, sum = 0; i < budgetHolePerYear.length; i++) {
+							sum += (budgetHolePerYear[i] - expectedHolePerYear[i]);
+						}
+						if (sum/(polandBudgetPerYear[i-1]) > 0.2) {
+								this.countryHole = sum/(polandBudgetPerYear[i-1]);
+								this.year = labels[i];
+								return true;
+						}
+						return false;
+					}
+				},
+				{
+					name: 'Degradacja',
+					outputClass: 'fail',
+					description: function(){
+						return 'Obniżenie obciążeń składkowych spowodowało utratę wpływów i problemy z płynnością finansową FUS. Budżet państwa pęka w szwach, nic dziwnego - wszak dług państwa wynosi '+Number((50+(this.countryHole*100)).toFixed(1))+'% PKB wobec zakładanych 50%. Zostajesz odwołany ze swojej funkcji i skierowany do zarządzania domem kultury w Pcimiu Dolnym.';
+					},
+					test: function(){
+						for(var i = 0, sum = 0; i < budgetHolePerYear.length; i++) {
+							sum += (budgetHolePerYear[i] - expectedHolePerYear[i]);
+						}
+						if (sum/(polandBudgetPerYear[i-1]) > 0.05) {
+								this.countryHole = sum/(polandBudgetPerYear[i-1]);
+								this.year = labels[i];
+								return true;
+						}
+						this.countryHole = sum/(polandBudgetPerYear[i-1]);
+						return false;
+					}
+				},
+				{
+					name: 'Może być',
+					outputClass: 'ok',
+					description: function(){
+						return 'Twoje rządy są całkiem udane - na skutek Twoich działań dług publiczny jako % PKB '+(this.countryHole < 0 ? 'zmalał o ' : 'wzrósł o ledwie ')+Math.abs(Number((100*this.countryHole).toFixed(1)))+' pkt. proc.';
+					},
+					test: function(){
+						for(var i = 0, sum = 0; i < budgetHolePerYear.length; i++) {
+							sum += (budgetHolePerYear[i] - expectedHolePerYear[i]);
+							console.log(labels[i], sum, (polandBudgetPerYear[i]), sum/(polandBudgetPerYear[i]));
+						}
+						if (Math.abs(sum/(polandBudgetPerYear[i-1])) < 0.05) {
+								this.countryHole = sum/(polandBudgetPerYear[i-1]);
+								this.year = labels[i];
+								return true;
+						}
+						this.countryHole = sum/(polandBudgetPerYear[i-1]);
+						return false;
+					}
+				},
+				{
+					name: 'Utrata popularności',
+					outputClass: 'ok',
+					description: function(){
+						return 'Podwyżka składek zmniejszyła dziurę w FUS o '+Math.round(this.ratio*100)+'%, ale zgodnie z oczekiwaniami jesteś znienawidzony po zakończeniu kadencji. Zatrudniasz się jako wykładowca ekonomii i dożywasz końca swoich dni zarabiając '+
+							(4000+(Math.round(Math.random()*Math.random()*20)*100))
+								+' złotych netto.';
+					},
+					test: function(){
+						function sum(a,b) {
+							return a+b;
+						}
+						var expectedTotalHole = expectedHolePerYear.reduce(sum);
+						var userTotalHole = budgetHolePerYear.reduce(sum);
+						var ratio = (userTotalHole/expectedTotalHole);
+						if (ratio < 0.9 && ratio > 0.5) {
+							this.ratio = 1-(userTotalHole/expectedTotalHole);
+							return true;
+						}
+						return false;
+					}
+				},
+				{
+					name: 'Poświęcenie dla kraju',
+					outputClass: 'ok',
+					description: function(){
+						return 'Skrajne podwyższenie składek załatało dziurę w FUS, ale jesteś naprawdę znienawidzony przez obywateli. Chciałeś zatrudnić się jako wykładowca ekonomii, ale studenci na Ciebie buczą. ';
+					},
+					test: function(){
+						return true;
+					}
+				}
+			];
+
+
+			if (!possibleOutputs.some(function(output){
+				var testResult = output.test();
+				console.log(testResult, output)
+				if (testResult) {
+					var $output = $('#your-result').html('');
+					$output.append(
+						$('<h2 />').text(output.name),
+						$('<p />').text(typeof output.description === 'function' ? output.description() : output.description)
+					);
+					return true;
+				}
+				return false;
+			})) {
+				$('#your-result').html('');
+			}
+			$('#canvas-container').html($('#canvas-container').html());
 			var myLineChart = new Chart(document.querySelector('canvas').getContext("2d")).Line(data, {
     				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>",
 					multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>"
