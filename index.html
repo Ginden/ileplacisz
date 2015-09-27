@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>ZUS</title>
+    <title>Zarządca ZUS</title>
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
@@ -23,16 +23,15 @@
       <div class="header clearfix">
         <nav>
           <ul class="nav nav-pills pull-right">
-            <li role="presentation" class="active"><a href="#">ZUS quiz</a></li>
-            <li role="presentation"><a href="#">AAA</a></li>
-            <li role="presentation"><a href="#">BBB</a></li>
+            <li role="presentation" class="active"><a href="#">Zarządca ZUS</a></li>
+            <li role="presentation"><a href="#">Wiek emerytalny</a></li>
           </ul>
         </nav>
-        <h3 class="text-muted">Zobacz ile płacisz i ile powinieneś płacić</h3>
+        <h3 class="text-muted">Zobacz jak sprawdzisz się wybierając wysokość składek na ZUS</h3>
       </div>
 
       <div class="jumbotron">
-        <h1>ZUS Quiz</h1>
+        <h1>Zarządca ZUS</h1>
         <p class="lead">Wybierz parametry z listy i zobacz czy dobrze oszacowałeś potrzeby ZUSu.</p>
 		<div class="row">
 		  <div class="col-md-8" id="canvas-container">
@@ -40,6 +39,7 @@
 		  </div>
 		  <div class="col-md-4">
 		  	<form>
+		  		<h2>Kto powinien płacić?</h2>
 				<div class="radio">
 				  <label>
 				    <input type="radio" name="kto_placi" id="skladka" value="15896" checked>
@@ -291,7 +291,7 @@
 					name: 'Poświęcenie dla kraju',
 					outputClass: 'ok',
 					description: function(){
-						return 'Skrajne podwyższenie składek załatało dziurę w FUS, ale jesteś naprawdę znienawidzony przez obywateli. Chciałeś zatrudnić się jako wykładowca ekonomii, ale studenci na Ciebie buczą. ';
+						return 'Skrajne podwyższenie składek załatało dziurę w FUS, ale jesteś naprawdę znienawidzony przez obywateli. Chciałeś zatrudnić się jako wykładowca ekonomii, ale studenci na Ciebie buczą. Rektor zrywa z Tobą umowę.';
 					},
 					test: function(){
 						return true;
