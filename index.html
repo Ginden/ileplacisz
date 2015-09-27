@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>ZUS</title>
+
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="#">ZUS quiz</a></li>
+            <li role="presentation"><a href="#">AAA</a></li>
+            <li role="presentation"><a href="#">BBB</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted">Zobacz ile płacisz i ile powinieneś płacić</h3>
+      </div>
+
+      <div class="jumbotron">
+        <h1>ZUS Quiz</h1>
+        <p class="lead">Wybierz parametry z listy i zobacz czy dobrze oszacowałeś potrzeby ZUSu.</p>
+		<div class="row">
+		  <div class="col-md-8">
+				<canvas id="myChart" width="600" height="600"></canvas>
+		  </div>
+		  <div class="col-md-4">
+		  	<form>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="kto_placi" id="skladka" value="15896" checked>
+				    Każdy pracujący powinien płacić na ZUS
+				  </label>
+				</div>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="kto_placi" id="poglowny" value="31000">
+				    Każdy dorosły powinien płacić na ZUS
+				  </label>
+				</div>
+				<div class="radio">
+				  <label>
+				    <input type="radio" name="kto_placi" id="poglowny_2" value="24739">
+				    Każdy dorosły, niebędący emerytem lub rencistą, powinien płacić na ZUS
+				  </label>
+				</div>
+				<div class="form-group">
+					<h2>Ile powinien średnio płacić miesięcznie?</h2>
+					<input class="bar" data-output-to="xd" type="range" id="wysokosc_skladki" min="0" step="50" max="1200" value="300"/>
+					<span class="highlight"></span>
+					<h3><span id="xd">300</span>zł</h3>
+				</div>
+				<div class="form-group">
+					<h2>O ile % powinna ta kwota wzrastać co roku?</h2>
+					<input class="bar" data-output-to="inflate" type="range" id="wzrost" min="0" step="0.5" max="30" value="2"/>
+					<span class="highlight"></span>
+					<h3><span id="inflate">2</span>%</h3>
+				</div>
+				<button type="button" id="check" class="btn btn-primary">Sprawdź</button>
+			</form>
+		  </div>
+		</div>
+        
+      </div>
+
+      <footer class="footer">
+        <p>;_;</p>
+      </footer>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+    <script>
+    	$(document.body).on('change keyup keydown input', 'input[type="range"][data-output-to]', function(e){
+    		var outputId = this.getAttribute('data-output-to');
+    		$('#'+outputId).text(this.value);
+    	});
+    	$('input[type="range"][data-output-to]').trigger('input');
+    	$('#check').click(function(e){
+    		var payingPeople = 1000*($('input[name="kto_placi"]:checked').val());
+    		var baseTaxPerYear = 12*($('#wysokosc_skladki').val());
+    		var increaseRate = 1+Number($('#wzrost').val())/100;
+    		var taxInYear = [baseTaxPerYear];
+    		var fusSpendings = [208, 218, 230, 242, 255];
+    		for(var i = 1; i < fusSpendings.length; i++) {
+    			taxInYear[i] = taxInYear[i-1]*increaseRate;
+    		}
+    		var budgetPerYear = taxInYear.map(function(tax){
+    			return Math.round((tax*payingPeople)/(1000*1000*1000));
+    		});
+    		console.log(budgetPerYear, fusSpendings)
+    		var budgetHolePerYear = budgetPerYear.map(function(budgetInYear, y){
+    			return fusSpendings[y] - budgetInYear;
+    		});
+    		var data = {
+			    labels: ["2016", "2017", "2018", "2019", "2020"],
+			    datasets: [
+			        {
+			            label: "Wydatki FUS",
+			            fillColor: "rgba(0,0,0,0.6)",
+			            strokeColor: "rgba(0,0,0,0.2)",
+			            pointColor: "rgba(0,0,0,0.5)",
+			            pointStrokeColor: "#fff",
+			            pointHighlightFill: "#fff",
+			            pointHighlightStroke: "rgba(0,0,0,1)",
+			            data: fusSpendings
+			        },
+			        {
+			            label: "Wydatki na emerytury",
+			            fillColor: "rgba(0,220,220,0.6)",
+			            strokeColor: "rgba(0,220,220,1)",
+			            pointColor: "rgba(0,220,220,1)",
+			            pointStrokeColor: "#fff",
+			            pointHighlightFill: "#fff",
+			            pointHighlightStroke: "rgba(0,220,220,1)",
+			            data: [136, 143, 152, 161, 170]
+			        },
+			        {
+			            label: "Przewidywany deficyt FUS",
+			            fillColor: "rgba(151,0,205,0.6)",
+			            strokeColor: "rgba(151,0,205,1)",
+			            pointColor: "rgba(151,0,205,1)",
+			            pointStrokeColor: "#fff",
+			            pointHighlightFill: "#fff",
+			            pointHighlightStroke: "rgba(151,187,205,1)",
+			            data: [54, 56, 58, 59, 61]
+			        },
+			        {
+			            label: "Deficyt wg Twojej wysokości składek",
+			            fillColor: "rgba(151,187,0,0.6)",
+			            strokeColor: "rgba(151,187,0,1)",
+			            pointColor: "rgba(151,187,0,1)",
+			            pointStrokeColor: "#fff",
+			            pointHighlightFill: "#fff",
+			            pointHighlightStroke: "rgba(151,187,0,1)",
+			            data: budgetHolePerYear
+			        }
+			    ]
+			};
+			var myLineChart = new Chart(document.querySelector('canvas').getContext("2d")).Line(data, {
+    				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>",
+					multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>"
+
+			});
+    		e.preventDefault();
+    		return false;
+    	});
+    </script>
+  </body>
+</html>
