@@ -35,7 +35,7 @@
         <p class="lead">Wybierz parametry z listy i zobacz czy dobrze oszacowałeś potrzeby ZUSu.</p>
 		<div class="row">
 		  <div class="col-md-8" id="canvas-container">
-				<canvas id="myChart" width="600" height="600"></canvas>
+				<canvas id="myChart" width="450" height="600"></canvas>
 		  </div>
 		  <div class="col-md-4">
 		  	<form>
@@ -87,9 +87,11 @@
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
     <script>
+		var newCanvasSize = $('#canvas-container').width();
+		$('#canvas-container canvas').attr('width', newCanvasSize)
+    	
     	$(document.body).on('change keyup keydown input', 'input[type="range"][data-output-to]', function(e){
     		var outputId = this.getAttribute('data-output-to');
     		$('#'+outputId).text(this.value);
@@ -246,10 +248,12 @@
 					}
 				},
 				{
-					name: 'Może być',
+					name: 'Zadowalająco',
 					outputClass: 'ok',
 					description: function(){
-						return 'Twoje rządy są całkiem udane - na skutek Twoich działań dług publiczny jako % PKB '+(this.countryHole < 0 ? 'zmalał o ' : 'wzrósł o ledwie ')+Math.abs(Number((100*this.countryHole).toFixed(1)))+' pkt. proc.';
+						var roundedScore = Math.abs(Number((100*this.countryHole).toFixed(1)));
+						var change = roundedScore === 0 ? 'nie zmienił się' : ((this.countryHole < 0 ? 'zmalał o ' + roundedScore: 'wzrósł o ledwie '+roundedScore) + ' pkt. proc')
+						return 'Twoje rządy są całkiem udane - na skutek Twoich działań dług publiczny jako % PKB '+change+'.';
 					},
 					test: function(){
 						for(var i = 0, sum = 0; i < budgetHolePerYear.length; i++) {
@@ -318,7 +322,7 @@
 			$('#canvas-container').html($('#canvas-container').html());
 			var myLineChart = new Chart(document.querySelector('canvas').getContext("2d")).Line(data, {
     				legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>",
-					multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>"
+					multiTooltipTemplate: "<%= datasetLabel %> - <%= value %> mld zł"
 
 			});
     		e.preventDefault();
