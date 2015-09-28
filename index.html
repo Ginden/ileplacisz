@@ -220,13 +220,18 @@
 					name: 'Uuuu, niedobrze',
 					outputClass: 'fail',
 					description: function(){
-						return 'Dług FUS, a w konsekwencji dług publiczny, poszybowały drastycznie w górę na skutek Twojego lekkomyślnego postępowania z finansami publicznymi. Pod koniec Twojej kadencji państwo jest zadłużone na '+Number((50+(this.countryHole*100)).toFixed(1))+'% PKB i znajduje się na granicy bankructwa. Popełniłeś przestępstwo z artykułu 296KK. Sąd skazał Cię na maksymalną karę - 10 lat bezwzględnego pozbawienia wolności.';
+                        var percent = Number((50+(this.countryHole*100)).toFixed(1));
+						return 'Dług FUS, a w konsekwencji dług publiczny, poszybowały drastycznie w górę na skutek Twojego lekkomyślnego postępowania z finansami publicznymi. ' +
+                               'Pod koniec Twojej kadencji państwo jest zadłużone na '+percent+'% PKB' +
+                               'i znajduje się na granicy bankructwa - Bank Światowy, Międzynarodowy Fundusz Walutowy i inwestorzy zagraniczni nie uwierzyli ' +
+                               'w możliwość finansowania emerytur z rozbuchanego deficytu.' +
+                               'Popełniłeś przestępstwo z artykułu 296KK. Sąd skazał Cię na maksymalną karę - 10 lat bezwzględnego pozbawienia wolności.';
 					},
 					test: function(){
 						for(var i = 0, sum = 0; i < budgetHolePerYear.length; i++) {
 							sum += (budgetHolePerYear[i] - expectedHolePerYear[i]);
 						}
-						if (sum/(polandBudgetPerYear[i-1]) > 0.2) {
+						if (sum/(polandBudgetPerYear[i-1]) > 0.1) {
 								this.countryHole = sum/(polandBudgetPerYear[i-1]);
 								this.year = labels[i];
 								return true;
@@ -238,7 +243,10 @@
 					name: 'Degradacja',
 					outputClass: 'fail',
 					description: function(){
-						return 'Obniżenie obciążeń składkowych spowodowało utratę wpływów i problemy z płynnością finansową FUS. Budżet państwa pęka w szwach, nic dziwnego - wszak dług państwa wynosi '+Number((50+(this.countryHole*100)).toFixed(1))+'% PKB wobec zakładanych 50%. Zostajesz odwołany ze swojej funkcji i skierowany do zarządzania domem kultury w Pcimiu Dolnym.';
+                        var percent = Number((50+(this.countryHole*100)).toFixed(1));
+						return 'Obniżenie obciążeń składkowych spowodowało utratę wpływów i problemy z płynnością finansową FUS. ' +
+                               'Budżet państwa pęka w szwach, nic dziwnego - wszak dług państwa wynosi '+percent+'% PKB wobec planowanych 50% i maksymalnie dopuszczalnych 55%.' +
+                               'Zostajesz odwołany ze swojej funkcji i skierowany do zarządzania domem kultury w Pcimiu Dolnym.';
 					},
 					test: function(){
 						for(var i = 0, sum = 0; i < budgetHolePerYear.length; i++) {
@@ -279,9 +287,10 @@
 					name: 'Utrata popularności',
 					outputClass: 'ok',
 					description: function(){
-						return 'Podwyżka składek zmniejszyła dziurę w FUS o '+Math.round(this.ratio*100)+'%, ale zgodnie z oczekiwaniami jesteś znienawidzony po zakończeniu kadencji. Zatrudniasz się jako wykładowca ekonomii i dożywasz końca swoich dni zarabiając '+
-							(4000+(Math.round(Math.random()*Math.random()*20)*100))
-								+' złotych netto.';
+                        var salary = (4000+(Math.round(Math.random()*Math.random()*20)*100))-Math.round((taxInYear[taxInYear.length-1])/12);
+                        var percent = Math.round(this.ratio*100)
+						return 'Podwyżka składek zmniejszyła dziurę w FUS o '+percent+'%, ale zgodnie z oczekiwaniami jesteś znienawidzony po zakończeniu kadencji.' +
+                               'Zatrudniasz się jako wykładowca ekonomii i dożywasz końca swoich dni zarabiając '+salary+' złotych netto.';
 					},
 					test: function(){
 						function sum(a,b) {
@@ -301,7 +310,8 @@
 					name: 'Poświęcenie dla kraju',
 					outputClass: 'ok',
 					description: function(){
-						return 'Skrajne podwyższenie składek załatało dziurę w FUS, ale jesteś naprawdę znienawidzony przez obywateli. Chciałeś zatrudnić się jako wykładowca ekonomii, ale studenci na Ciebie buczą. Rektor zrywa z Tobą umowę.';
+						return 'Skrajne podwyższenie składek załatało dziurę w FUS, ale jesteś naprawdę znienawidzony przez obywateli.' +
+                               'Chciałeś zatrudnić się jako wykładowca ekonomii, ale studenci na Ciebie buczą. Rektor zrywa z Tobą umowę.';
 					},
 					test: function(){
 						return true;
