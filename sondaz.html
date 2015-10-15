@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Błąd sondażowy</title>
+
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right" id="menu">
+          </ul>
+        </nav>
+        <h3 class="text-muted">Zobacz jak sprawdzisz się wybierając wysokość składek na ZUS</h3>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Błąd sondażowy</h1>
+        <p class="lead">Dobierz poparcie partii i sprawdź jakie wyniki mogą dać w sondażach</p>
+		<div class="row">
+		  <div class="col-md-8" id="canvas-container">
+				<canvas id="myChart" width="450" height="600"></canvas>
+		  </div>
+		  <div class="col-md-4">
+		  	<form>
+		  		<h2>Kto powinien płacić?</h2>
+
+
+
+				<button type="button" id="check" class="btn btn-primary">Sprawdź</button>
+			</form>
+		  </div>
+
+		</div>
+		  <div class="output row" id="your-result">
+
+		  </div>
+      </div>
+
+      <footer class="footer">
+        <p>;_;</p>
+      </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+    <script>
+		var newCanvasSize = $('#canvas-container').width();
+		$('#canvas-container canvas').attr('width', newCanvasSize);
+    	var parties = [
+            {
+                name: 'Platforma Obywatelska',
+                slug: 'po',
+                voters: 30
+            },
+            {
+                name: 'Prawo i Sprawiedliwość',
+                slug: 'pis',
+                voters: 45
+            },
+            {
+                name: 'Nowoczesna Polska',
+                slug: 'npl',
+                voters: 5
+            },
+            {
+                name: 'Zjednoczona Lewica',
+                slug: 'zlew',
+                voters: 6
+            },
+            {
+                name: 'Polskie Stronnictwo Ludowe',
+                slug: 'psl',
+                voters: 6
+            },
+            {
+                name: 'KORWiN',
+                slug: 'korwin',
+                voters: 4
+            },
+            {
+                name: 'Razem',
+                slug: 'razem',
+                voters: 1
+            },
+            {
+                name: 'Kukiz \'15',
+                slug: 'kukiz',
+                voters: 3
+            }
+        ];
+    </script>
+    <script src="common.js"></script>
+  </body>
+</html>
